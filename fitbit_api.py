@@ -1,8 +1,11 @@
 from oauthlib.oauth2 import BackendApplicationClient 
+from oauthlib.oauth2.rfc6749.errors import (InsecureTransportError,
+                                            TokenExpiredError)
 from requests_oauthlib import OAuth2Session
 from requests.auth import HTTPBasicAuth
 from pathlib import Path
 import json
+import sys
 
 class FitbitApi:
     def __init__(self, account_email):
@@ -55,7 +58,7 @@ class FitbitApi:
 
     def do_refresh_token(self):
         # NOTE: Untested
-        self.token = self.api.refresh_token(token_url, refresh_token=self.refresh_token(), auth=self.auth)
+        self.token = self.api.refresh_token(self.token_url, refresh_token=self.refresh_token(), auth=self.auth)
         self.dump_token()
 
     def sleep(self):
@@ -77,6 +80,7 @@ class FitbitApi:
         try:
             return self.api.get(self.url + path).json()
         except TokenExpiredError as e:
+            print("Unexpected error:", sys.exc_info()[0])
             self.do_refresh_token()
             self.load_api()
         return self.api.get(self.url + path).json()
