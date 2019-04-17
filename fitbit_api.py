@@ -8,12 +8,12 @@ import json
 import sys
 
 class FitbitApi:
-    def __init__(self, account_email):
+    def __init__(self, account_email, client_id, client_secret):
         if "@" not in account_email:
             raise ValueError(account_email + ' does not look like an email')
+        self.client_id = client_id
+        self.client_secret = client_secret
 
-        self.client_id = '22DKYX'
-        self.client_secret = 'c4e6ee4a50d36ff3b817c0a60ed9db21'
         self.scope = ["activity", "heartrate", "location", "nutrition", "profile", "settings", "sleep", "social", "weight"]
         self.redirect_uri = 'https://127.0.0.1:8080/'
 
@@ -57,7 +57,6 @@ class FitbitApi:
         return self.token['refresh_token']
 
     def do_refresh_token(self):
-        # NOTE: Untested
         self.token = self.api.refresh_token(self.token_url, refresh_token=self.refresh_token(), auth=self.auth)
         self.dump_token()
 
