@@ -17,10 +17,23 @@ For development/console stuff, you'll want IPython:
 
 ## Getting started
 
+Store your client id and secret somewhere secure (like in a `client.json` file, 
+see `console.py` for an implementation)
+
+
+
+Then you can just:
+
     from fitbit_api import FitbitApi
-    fitbit = FitbitApi('email.address@wisc.edu')
+    fitbit = FitbitApi('email.address@wisc.edu', client_id, client_secret)
 
 ## Console mode
+
+Create a `client.json` file that looks something like
+
+    {"id": "77DFRL", "secret": "deadbeef001010101001111" }
+
+Then run:
 
     python3 console.py email.address@wisc.edu
 
