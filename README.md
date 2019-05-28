@@ -20,7 +20,11 @@ email address of the fitbit account for that participant.
 
 Then do
 
-    python3 downloader.py accounts.csv
+    python3 downloader.py accounts.csv --start-date=2019-03-01 --end-date=2019-04-01
+
+or
+
+    python3 downloader.py --help
 
 ## Developer details
 
