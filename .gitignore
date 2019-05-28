@@ -1,3 +1,6 @@
 __pycache__
 tokens/*
+*.csv
+*.pyc
 client.json
+.venv
