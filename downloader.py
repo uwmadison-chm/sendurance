@@ -35,6 +35,24 @@ except FileNotFoundError as e:
     sys.exit("You need to make sure there is a client.json file in the current directory with an 'id' and 'secret' keys'.")
 
 
+def save_sleep_day(writer, fitbit, ppt, day):
+    sleep = fitbit.sleep(day)
+    intra = sleep['sleep'][0]['minuteData']
+    writer.writerow(["ID", "Time", "State", "Interpreted"])
+    interpreter = ['', 'Aleep', 'Restless', 'Awake']
+    for item in intra:
+        # TODO: probably need better merging of date/time
+        writer.writerow([ppt, day.isoformat() + " " + item['dateTime'], item['value'], interpreter[int(item['value'])]])
+
+def save_sleep(fitbit, ppt, start, end):
+    path - os.path.join(args.output, 'sleep')
+    os.makedirs(path, exist_ok=True)
+    with open(os.path.join(path, ppt + '_1min_sleep.tsv'), 'w') as tsvfile:
+        writer = csv.writer(tsvfile, dialect='excel-tab')
+        for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
+            logging.info(f"Downloading {day} for {ppt} from {email}")
+            save_sleep_day(writer, fitbit, ppt, day)
+
 def save_hrv_day(writer, fitbit, ppt, day):
     hrv = fitbit.hrv(day)
     intra = hrv['activities-heart-intraday']['dataset']
@@ -59,4 +77,5 @@ with open(args.input, newline='') as csvfile:
         email = row[1]
         fitbit = FitbitApi(email, client['id'], client['secret'])
 
-        save_hrv(fitbit, ppt, args.start_date, args.end_date)
+        # save_hrv(fitbit, ppt, args.start_date, args.end_date)
+        # save_sleep(fitbit, ppt, args.start_date, args.end_date)
