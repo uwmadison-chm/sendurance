@@ -62,9 +62,6 @@ class FitbitApi:
         self.token = self.api.refresh_token(self.token_url, refresh_token=self.refresh_token(), auth=self.auth)
         self.dump_token()
 
-    def sleep(self):
-        return self.get('/user/-/sleep/goal.json')
-
     def date_string(self, date):
         if isinstance(date, datetime):
             return date.date().isoformat()
@@ -72,6 +69,14 @@ class FitbitApi:
             return date.isoformat()
         else:
             return date
+
+    # A list of all the urls can be found in api.py of the python-fitbit module
+
+    def sleep_goal(self):
+        return self.get('/user/-/sleep/goal.json')
+
+    def sleep(self):
+        return self.get(f'/user/-/sleep/date/{self.date_string(date)}.json')
 
     def day_activities(self, date):
         return self.get(f'/user/-/activities/date/{self.date_string(date)}.json')
