@@ -45,7 +45,7 @@ def save_sleep_day(writer, fitbit, ppt, day):
         writer.writerow([ppt, day.isoformat() + " " + item['dateTime'], item['value'], interpreter[int(item['value'])]])
 
 def save_sleep(fitbit, ppt, start, end):
-    path - os.path.join(args.output, 'sleep')
+    path = os.path.join(args.output, 'sleep')
     os.makedirs(path, exist_ok=True)
     with open(os.path.join(path, ppt + '_1min_sleep.tsv'), 'w') as tsvfile:
         writer = csv.writer(tsvfile, dialect='excel-tab')
@@ -78,4 +78,4 @@ with open(args.input, newline='') as csvfile:
         fitbit = FitbitApi(email, client['id'], client['secret'])
 
         # save_hrv(fitbit, ppt, args.start_date, args.end_date)
-        # save_sleep(fitbit, ppt, args.start_date, args.end_date)
+        save_sleep(fitbit, ppt, args.start_date, args.end_date)
