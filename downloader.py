@@ -53,6 +53,23 @@ def save_sleep(fitbit, ppt, start, end):
             logging.info(f"Downloading {day} for {ppt} from {email}")
             save_sleep_day(writer, fitbit, ppt, day)
 
+def save_steps_day(writer, fitbit, ppt, day):
+    steps = fitbit.steps(day)
+    intra = steps['activities-steps-intraday']['dataset']
+    writer.writerow(["ID", "Time", "Value"])
+    for item in intra:
+        # TODO: probably need better merging of date/time
+        writer.writerow([ppt, day.isoformat() + " " + item['time'], item['value']])
+
+def save_steps(fitbit, ppt, start, end):
+    path = os.path.join(args.output, 'activity')
+    os.makedirs(path, exist_ok=True)
+    with open(os.path.join(path, ppt + '_1min_steps.tsv'), 'w') as tsvfile:
+        writer = csv.writer(tsvfile, dialect='excel-tab')
+        for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
+            logging.info(f"Downloading {day} for {ppt} from {email}")
+            save_steps_day(writer, fitbit, ppt, day)
+
 def save_hrv_day(writer, fitbit, ppt, day):
     hrv = fitbit.hrv(day)
     intra = hrv['activities-heart-intraday']['dataset']
@@ -79,3 +96,4 @@ with open(args.input, newline='') as csvfile:
 
         # save_hrv(fitbit, ppt, args.start_date, args.end_date)
         # save_sleep(fitbit, ppt, args.start_date, args.end_date)
+        # save_steps(fitbit, ppt, args.start_date, args.end_date)

@@ -75,17 +75,46 @@ class FitbitApi:
     def sleep_goal(self):
         return self.get('/user/-/sleep/goal.json')
 
-    def sleep(self):
+    def sleep(self, date):
         return self.get(f'/user/-/sleep/date/{self.date_string(date)}.json')
 
     def day_activities(self, date):
-        return self.get(f'/user/-/activities/date/{self.date_string(date)}.json')
+        return self.intraday_time_series('activities', date)
+        # return self.get(f'/user/-/activities/date/{self.date_string(date)}.json')
 
     def activities(self, date):
         return self.get(f'/user/-/activities/list.json?beforeDate={self.date_string(date)}&offset=0&limit=20&sort=desc')
 
+    def steps(self, date):
+        return self.intraday_time_series('activities/steps', date)
+
     def hrv(self, date):
-        return self.get(f'/user/-/activities/heart/date/{self.date_string(date)}/1d/1sec.json')
+        return self.intraday_time_series('activities/heart', date)
+        # return self.get(f'/user/-/activities/heart/date/{self.date_string(date)}/1d/1sec.json')
+
+    def intraday_time_series(self, resource, date, detail_level='1min', start_time=None, end_time=None):
+        url = "/user/-/{resource}/date/{date}/1d/{detail_level}".format(
+            resource=resource,
+            date=self.date_string(date),
+            detail_level=detail_level
+        )
+        # Check that the time range is valid
+        time_test = lambda t: not (t is None or isinstance(t, str) and not t)
+        time_map = list(map(time_test, [start_time, end_time]))
+        if not all(time_map) and any(time_map):
+            raise TypeError('You must provide both the end and start time or neither')
+
+        if all(time_map):
+            url = url + '/time'
+            for time in [start_time, end_time]:
+                time_str = time
+                if not isinstance(time_str, str):
+                    time_str = time.strftime('%H:%M')
+                url = url + ('/%s' % (time_str))
+
+        url = url + '.json'
+
+        return self.get(url)
 
     def get(self, path):
         # It would sure be nice to use requests-oauthlib's automatic token refresh callbacks!
