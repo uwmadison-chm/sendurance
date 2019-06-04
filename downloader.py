@@ -37,6 +37,8 @@ except FileNotFoundError as e:
 
 def save_sleep_day(writer, fitbit, ppt, day):
     sleep = fitbit.sleep(day)
+    if not sleep['sleep']:
+        return
     intra = sleep['sleep'][0]['minuteData']
     writer.writerow(["ID", "Time", "State", "Interpreted"])
     interpreter = ['', 'Aleep', 'Restless', 'Awake']
@@ -55,6 +57,8 @@ def save_sleep(fitbit, ppt, start, end):
 
 def save_steps_day(writer, fitbit, ppt, day):
     steps = fitbit.steps(day)
+    if not steps['activities-steps-intraday']:
+        return
     intra = steps['activities-steps-intraday']['dataset']
     writer.writerow(["ID", "Time", "Value"])
     for item in intra:
@@ -72,6 +76,8 @@ def save_steps(fitbit, ppt, start, end):
 
 def save_hrv_day(writer, fitbit, ppt, day):
     hrv = fitbit.hrv(day)
+    if not hrv['activities-heart-intraday']:
+        return
     intra = hrv['activities-heart-intraday']['dataset']
     writer.writerow(["ID", "Time", "Heartrate"])
     for item in intra:
@@ -96,4 +102,4 @@ with open(args.input, newline='') as csvfile:
 
         # save_hrv(fitbit, ppt, args.start_date, args.end_date)
         # save_sleep(fitbit, ppt, args.start_date, args.end_date)
-        # save_steps(fitbit, ppt, args.start_date, args.end_date)
+        save_steps(fitbit, ppt, args.start_date, args.end_date)
