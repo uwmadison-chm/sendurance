@@ -34,6 +34,10 @@ try:
 except FileNotFoundError as e:
     sys.exit("You need to make sure there is a client.json file in the current directory with an 'id' and 'secret' keys'.")
 
+def convert_time(day, time):
+    time = datetime.strptime(time, '%H:%M:%S').time()
+    day = day.replace(hour=time.hour, minute=time.minute, second=time.second)
+    return day.isoformat()
 
 def save_sleep_day(writer, fitbit, ppt, day):
     sleep = fitbit.sleep(day)
@@ -43,8 +47,7 @@ def save_sleep_day(writer, fitbit, ppt, day):
     writer.writerow(["ID", "Time", "State", "Interpreted"])
     interpreter = ['', 'Aleep', 'Restless', 'Awake']
     for item in intra:
-        # TODO: probably need better merging of date/time
-        writer.writerow([ppt, day.isoformat() + " " + item['dateTime'], item['value'], interpreter[int(item['value'])]])
+        writer.writerow([ppt, convert_time(day, item['dateTime']), item['value'], interpreter[int(item['value'])]])
 
 def save_sleep(fitbit, ppt, start, end):
     path = os.path.join(args.output, 'sleep')
@@ -61,9 +64,8 @@ def save_steps_day(writer, fitbit, ppt, day):
         return
     intra = steps['activities-steps-intraday']['dataset']
     writer.writerow(["ID", "Time", "Value"])
-    for item in intra:
-        # TODO: probably need better merging of date/time
-        writer.writerow([ppt, day.isoformat() + " " + item['time'], item['value']])
+    for item in intra[1:2]:
+        writer.writerow([ppt, convert_time(day, item['time']), item['value']])
 
 def save_steps(fitbit, ppt, start, end):
     path = os.path.join(args.output, 'activity')
@@ -81,8 +83,7 @@ def save_hrv_day(writer, fitbit, ppt, day):
     intra = hrv['activities-heart-intraday']['dataset']
     writer.writerow(["ID", "Time", "Heartrate"])
     for item in intra:
-        # TODO: probably need better merging of date/time
-        writer.writerow([ppt, day.isoformat() + " " + item['time'], item['value']])
+        writer.writerow([ppt, convert_time(day, item['time']), item['value']])
 
 def save_hrv(fitbit, ppt, start, end):
     path = os.path.join(args.output, 'HR')
@@ -102,4 +103,4 @@ with open(args.input, newline='') as csvfile:
 
         # save_hrv(fitbit, ppt, args.start_date, args.end_date)
         # save_sleep(fitbit, ppt, args.start_date, args.end_date)
-        save_steps(fitbit, ppt, args.start_date, args.end_date)
+        # save_steps(fitbit, ppt, args.start_date, args.end_date)
