@@ -44,7 +44,6 @@ def save_sleep_day(writer, fitbit, ppt, day):
     if not sleep['sleep']:
         return
     intra = sleep['sleep'][0]['minuteData']
-    writer.writerow(["ID", "Time", "State", "Interpreted"])
     interpreter = ['', 'Aleep', 'Restless', 'Awake']
     for item in intra:
         writer.writerow([ppt, convert_time(day, item['dateTime']), item['value'], interpreter[int(item['value'])]])
@@ -54,6 +53,7 @@ def save_sleep(fitbit, ppt, start, end):
     os.makedirs(path, exist_ok=True)
     with open(os.path.join(path, ppt + '_1min_sleep.tsv'), 'w', newline='') as tsvfile:
         writer = csv.writer(tsvfile, dialect='excel-tab')
+        writer.writerow(["ID", "Time", "State", "Interpreted"])
         for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
             logging.info(f"Downloading {day} for {ppt} from {email}")
             save_sleep_day(writer, fitbit, ppt, day)
@@ -63,7 +63,6 @@ def save_steps_day(writer, fitbit, ppt, day):
     if not steps['activities-steps-intraday']:
         return
     intra = steps['activities-steps-intraday']['dataset']
-    writer.writerow(["ID", "Time", "Value"])
     for item in intra[1:2]:
         writer.writerow([ppt, convert_time(day, item['time']), item['value']])
 
@@ -72,6 +71,7 @@ def save_steps(fitbit, ppt, start, end):
     os.makedirs(path, exist_ok=True)
     with open(os.path.join(path, ppt + '_1min_steps.tsv'), 'w', newline='') as tsvfile:
         writer = csv.writer(tsvfile, dialect='excel-tab')
+        writer.writerow(["ID", "Time", "Value"])
         for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
             logging.info(f"Downloading {day} for {ppt} from {email}")
             save_steps_day(writer, fitbit, ppt, day)
@@ -81,7 +81,6 @@ def save_hrv_day(writer, fitbit, ppt, day):
     if not hrv['activities-heart-intraday']:
         return
     intra = hrv['activities-heart-intraday']['dataset']
-    writer.writerow(["ID", "Time", "Heartrate"])
     for item in intra:
         writer.writerow([ppt, convert_time(day, item['time']), item['value']])
 
@@ -90,6 +89,7 @@ def save_hrv(fitbit, ppt, start, end):
     os.makedirs(path, exist_ok=True)
     with open(os.path.join(path, ppt + '_1min_HR.tsv'), 'w', newline='') as tsvfile:
         writer = csv.writer(tsvfile, dialect='excel-tab')
+        writer.writerow(["ID", "Time", "Heartrate"])
         for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
             logging.info(f"Downloading {day} for {ppt} from {email}")
             save_hrv_day(writer, fitbit, ppt, day)
