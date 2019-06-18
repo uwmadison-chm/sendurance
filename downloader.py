@@ -51,8 +51,8 @@ def save_sleep_day(writer, fitbit, ppt, day):
 def save_sleep(fitbit, ppt, start, end):
     path = os.path.join(args.output, 'sleep')
     os.makedirs(path, exist_ok=True)
-    with open(os.path.join(path, ppt + '_1min_sleep.tsv'), 'w', newline='') as tsvfile:
-        writer = csv.writer(tsvfile, dialect='excel-tab')
+    with open(os.path.join(path, ppt + '_1min_sleep.tsv'), 'w') as tsvfile:
+        writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
         writer.writerow(["ID", "Time", "State", "Interpreted"])
         for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
             logging.info(f"Downloading {day} for {ppt} from {email}")
@@ -69,8 +69,8 @@ def save_steps_day(writer, fitbit, ppt, day):
 def save_steps(fitbit, ppt, start, end):
     path = os.path.join(args.output, 'activity')
     os.makedirs(path, exist_ok=True)
-    with open(os.path.join(path, ppt + '_1min_steps.tsv'), 'w', newline='') as tsvfile:
-        writer = csv.writer(tsvfile, dialect='excel-tab')
+    with open(os.path.join(path, ppt + '_1min_steps.tsv'), 'w') as tsvfile:
+        writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
         writer.writerow(["ID", "Time", "Value"])
         for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
             logging.info(f"Downloading {day} for {ppt} from {email}")
@@ -87,8 +87,8 @@ def save_hrv_day(writer, fitbit, ppt, day):
 def save_hrv(fitbit, ppt, start, end):
     path = os.path.join(args.output, 'HR')
     os.makedirs(path, exist_ok=True)
-    with open(os.path.join(path, ppt + '_1min_HR.tsv'), 'w', newline='') as tsvfile:
-        writer = csv.writer(tsvfile, dialect='excel-tab')
+    with open(os.path.join(path, ppt + '_1min_HR.tsv'), 'w') as tsvfile:
+        writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
         writer.writerow(["ID", "Time", "Heartrate"])
         for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
             logging.info(f"Downloading {day} for {ppt} from {email}")
@@ -102,5 +102,5 @@ with open(args.input, newline='') as csvfile:
         fitbit = FitbitApi(email, client['id'], client['secret'])
 
         # save_hrv(fitbit, ppt, args.start_date, args.end_date)
-        # save_sleep(fitbit, ppt, args.start_date, args.end_date)
+        save_sleep(fitbit, ppt, args.start_date, args.end_date)
         # save_steps(fitbit, ppt, args.start_date, args.end_date)
