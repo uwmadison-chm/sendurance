@@ -3,14 +3,11 @@ import json
 import sys
 import csv
 import argparse
-
-from datetime import datetime, timedelta
+from datetime import datetime
 import dateutil.parser
-import os
-import os.path
+import coloredlogs
+from DownloadWrapper import DownloadWrapper
 
-import logging                                                                                                                                                                                                                 
-import coloredlogs 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', action='count')
@@ -34,66 +31,14 @@ try:
 except FileNotFoundError as e:
     sys.exit("You need to make sure there is a client.json file in the current directory with an 'id' and 'secret' keys'.")
 
-
-def save_sleep_day(writer, fitbit, ppt, day):
-    sleep = fitbit.sleep(day)
-    intra = sleep['sleep'][0]['minuteData']
-    writer.writerow(["ID", "Time", "State", "Interpreted"])
-    interpreter = ['', 'Aleep', 'Restless', 'Awake']
-    for item in intra:
-        # TODO: probably need better merging of date/time
-        writer.writerow([ppt, day.isoformat() + " " + item['dateTime'], item['value'], interpreter[int(item['value'])]])
-
-def save_sleep(fitbit, ppt, start, end):
-    path = os.path.join(args.output, 'sleep')
-    os.makedirs(path, exist_ok=True)
-    with open(os.path.join(path, ppt + '_1min_sleep.tsv'), 'w') as tsvfile:
-        writer = csv.writer(tsvfile, dialect='excel-tab')
-        for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
-            logging.info(f"Downloading {day} for {ppt} from {email}")
-            save_sleep_day(writer, fitbit, ppt, day)
-
-def save_steps_day(writer, fitbit, ppt, day):
-    steps = fitbit.steps(day)
-    intra = steps['activities-steps-intraday']['dataset']
-    writer.writerow(["ID", "Time", "Value"])
-    for item in intra:
-        # TODO: probably need better merging of date/time
-        writer.writerow([ppt, day.isoformat() + " " + item['time'], item['value']])
-
-def save_steps(fitbit, ppt, start, end):
-    path = os.path.join(args.output, 'activity')
-    os.makedirs(path, exist_ok=True)
-    with open(os.path.join(path, ppt + '_1min_steps.tsv'), 'w') as tsvfile:
-        writer = csv.writer(tsvfile, dialect='excel-tab')
-        for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
-            logging.info(f"Downloading {day} for {ppt} from {email}")
-            save_steps_day(writer, fitbit, ppt, day)
-
-def save_hrv_day(writer, fitbit, ppt, day):
-    hrv = fitbit.hrv(day)
-    intra = hrv['activities-heart-intraday']['dataset']
-    writer.writerow(["ID", "Time", "Heartrate"])
-    for item in intra:
-        # TODO: probably need better merging of date/time
-        writer.writerow([ppt, day.isoformat() + " " + item['time'], item['value']])
-
-def save_hrv(fitbit, ppt, start, end):
-    path = os.path.join(args.output, 'HR')
-    os.makedirs(path, exist_ok=True)
-    with open(os.path.join(path, ppt + '_1min_HR.tsv'), 'w') as tsvfile:
-        writer = csv.writer(tsvfile, dialect='excel-tab')
-        for day in [start + timedelta(days=x) for x in range(0, (end-start).days + 1)]:
-            logging.info(f"Downloading {day} for {ppt} from {email}")
-            save_hrv_day(writer, fitbit, ppt, day)
-
 with open(args.input, newline='') as csvfile:
     r = csv.reader(csvfile)
     for row in r:
         ppt = row[0]
         email = row[1]
         fitbit = FitbitApi(email, client['id'], client['secret'])
-
-        # save_hrv(fitbit, ppt, args.start_date, args.end_date)
-        # save_sleep(fitbit, ppt, args.start_date, args.end_date)
-        # save_steps(fitbit, ppt, args.start_date, args.end_date)
+        Downloader = DownloadWrapper(ppt=ppt, fitbit=fitbit, start=args.start_date,
+                                     end=args.end_date, output=args.output)
+        # Downloader.save_hrv()
+        # Downloader.save_sleep()
+        # Downloader.save_steps()
