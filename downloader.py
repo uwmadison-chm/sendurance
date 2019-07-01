@@ -48,8 +48,8 @@ def save_sleep_day(writer, fitbit, ppt, day):
     for item in intra:
         writer.writerow([ppt, convert_time(day, item['dateTime']), item['value'], interpreter[int(item['value'])]])
 
-def save_sleep(fitbit, ppt, start, end):
-    path = os.path.join(args.output, 'sleep')
+def save_sleep(fitbit, ppt, start, end, output=args.output):
+    path = os.path.join(output, 'sleep')
     os.makedirs(path, exist_ok=True)
     with open(os.path.join(path, ppt + '_1min_sleep.tsv'), 'w') as tsvfile:
         writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
@@ -66,8 +66,8 @@ def save_steps_day(writer, fitbit, ppt, day):
     for item in intra[1:2]:
         writer.writerow([ppt, convert_time(day, item['time']), item['value']])
 
-def save_steps(fitbit, ppt, start, end):
-    path = os.path.join(args.output, 'activity')
+def save_steps(fitbit, ppt, start, end, output=args.output):
+    path = os.path.join(output, 'activity')
     os.makedirs(path, exist_ok=True)
     with open(os.path.join(path, ppt + '_1min_steps.tsv'), 'w') as tsvfile:
         writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
@@ -84,8 +84,8 @@ def save_hrv_day(writer, fitbit, ppt, day):
     for item in intra:
         writer.writerow([ppt, convert_time(day, item['time']), item['value']])
 
-def save_hrv(fitbit, ppt, start, end):
-    path = os.path.join(args.output, 'HR')
+def save_hrv(fitbit, ppt, start, end, output=args.output):
+    path = os.path.join(output, 'HR')
     os.makedirs(path, exist_ok=True)
     with open(os.path.join(path, ppt + '_1min_HR.tsv'), 'w') as tsvfile:
         writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
@@ -102,5 +102,5 @@ with open(args.input, newline='') as csvfile:
         fitbit = FitbitApi(email, client['id'], client['secret'])
 
         # save_hrv(fitbit, ppt, args.start_date, args.end_date)
-        save_sleep(fitbit, ppt, args.start_date, args.end_date)
+        # save_sleep(fitbit, ppt, args.start_date, args.end_date)
         # save_steps(fitbit, ppt, args.start_date, args.end_date)
