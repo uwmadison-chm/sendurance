@@ -59,9 +59,9 @@ Now there's a "fitbit" object you can play with.
     
 ## Using the Fleet Downloader
 
-Create a csv file with columns ID, Email log-in, First Day, and Last Day. Include rows for every Fitbit. Either call this file fleet_data.csv or edit the fleet_file variable in fleet_downloader.py to point to this csv file.
+Create a csv file with columns ID, Email log-in, First Day, and Last Day. Include rows for every Fitbit. Either call this file `fleet_data.csv` or edit the fleet_file variable in `fleet_downloader.py` to point to this csv file.
 
-You can edit fleet_downloader.py to download the data you want using the lines
+You can edit `fleet_downloader.py` to download the data you want using the lines
     
     Downloader.save_steps()
     Downloader.save_hrv()
