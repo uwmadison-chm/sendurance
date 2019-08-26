@@ -26,6 +26,20 @@ or
 
     python3 downloader.py --help
 
+## Using the Fleet Downloader
+
+Create a csv file with columns ID, Email log-in, First Day, and Last Day. Include rows for every Fitbit. Either call this file `fleet_data.csv` or edit the fleet_file variable in `fleet_downloader.py` to point to this csv file.
+
+You can edit `fleet_downloader.py` to download the data you want using the lines
+    
+    Downloader.save_steps()
+    Downloader.save_hrv()
+    Downloader.save_sleep()
+
+Then do
+
+    python3 fleet_downloader.py
+
 ## Developer details
 
 For development/console stuff, you'll want IPython:
@@ -57,16 +71,3 @@ Now there's a "fitbit" object you can play with.
     fitbit.activities()
     fitbit.get(...)
     
-## Using the Fleet Downloader
-
-Create a csv file with columns ID, Email log-in, First Day, and Last Day. Include rows for every Fitbit. Either call this file `fleet_data.csv` or edit the fleet_file variable in `fleet_downloader.py` to point to this csv file.
-
-You can edit `fleet_downloader.py` to download the data you want using the lines
-    
-    Downloader.save_steps()
-    Downloader.save_hrv()
-    Downloader.save_sleep()
-
-Then do
-
-    python3 fleet_downloader.py
