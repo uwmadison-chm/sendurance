@@ -11,20 +11,7 @@ refresh-token dance happen automatically.
 
     python3 -m virtualenv .venv
     source .venv/bin/activate
-    pip3 install requests requests_oauthlib
-
-## Using the downloader
-
-Create a csv file where column 1 is the ID and column 2 is the
-email address of the fitbit account for that participant.
-
-Then do
-
-    python3 downloader.py accounts.csv --start-date=2019-03-01 --end-date=2019-04-01
-
-or
-
-    python3 downloader.py --help
+    pip3 install -r requirements.txt
 
 ## Using the Fleet Downloader
 
@@ -39,6 +26,7 @@ You can edit `fleet_downloader.py` to download the data you want using the lines
 Then do
 
     python3 fleet_downloader.py
+
 
 ## Developer details
 

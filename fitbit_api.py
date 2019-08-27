@@ -8,6 +8,8 @@ from datetime import datetime
 import json
 import sys
 import logging
+import os
+import pyperclip
 
 class FitbitApi:
     def __init__(self, account_email, client_id, client_secret):
@@ -35,7 +37,9 @@ class FitbitApi:
             self.api = OAuth2Session(client_id=self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
             authorization_url, state = self.api.authorization_url(self.auth_url)
 
+            pyperclip.copy(email)
             print('Please go to %s and authorize access.' % authorization_url)
+            os.system(f'firefox {authorization_url}')
             authorization_response = input('Enter the full callback URL: ')
 
             self.token = self.api.fetch_token(token_url=self.token_url, auth=self.auth, authorization_response=authorization_response)
