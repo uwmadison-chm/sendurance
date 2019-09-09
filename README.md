@@ -27,6 +27,9 @@ Then do
 
     python3 fleet_downloader.py
 
+## Using the AFCHRON downloader (with PhantomJS)
+
+1. Install [geckodriver](https://github.com/mozilla/geckodriver/releases/) somewhere in your path.
 
 ## Developer details
 

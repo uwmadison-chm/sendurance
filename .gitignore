@@ -5,3 +5,6 @@ raw/*
 *.pyc
 client.json
 .venv
+screen*.png
+geckodriver.log
+ghostdriver.log

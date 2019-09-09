@@ -37,7 +37,7 @@ try:
     with open("client.json") as json_file:  
         client = json.load(json_file)
 except FileNotFoundError as e:
-    sys.exit("You need to make sure there is a client.json file in the current directory with an 'id' and 'secret' keys'.")
+    sys.exit("You need to make sure there is a client.json file in the current directory with an 'id' and 'secret' keys'. If all your fitbits use the same password, also add a 'password' key.")
 
 
 def read_data(file_path, sheet_name="Distribution"):
@@ -87,7 +87,7 @@ def read_data(file_path, sheet_name="Distribution"):
 r = read_data(args.input)
 for row in r:
     email = f'afc.fitbit+{row["fitbit_id"]}@gmail.com'
-    fitbit = FitbitApi(email, client['id'], client['secret'])
+    fitbit = FitbitApi(email, client['password'], client['id'], client['secret'])
     Downloader = DownloadWrapper(ppt=row['id'], fitbit=fitbit, start=row['start_date'],
                                     end=row['end_date'], output=args.output)
     Downloader.save_hrv()
