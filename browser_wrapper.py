@@ -58,7 +58,6 @@ class BrowserWrapper:
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#password-input input'))).send_keys(password + Keys.ENTER)
 
             time.sleep(5)
-            driver.save_screenshot('screen_allow.png')
 
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#selectAllScope'))).click()
         except WebDriverException as e:
