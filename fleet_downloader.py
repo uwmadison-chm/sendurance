@@ -5,7 +5,7 @@ import sys
 from datetime import datetime, timedelta
 import pyperclip
 import logging
-from DownloadWrapper import DownloadWrapper
+from download_wrapper import DownloadWrapper
 
 
 # TODO: modify this to include the option to specify time of day

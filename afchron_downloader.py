@@ -11,10 +11,9 @@ import xlrd
 
 import json
 from fitbit_api import FitbitApi
-from DownloadWrapper import DownloadWrapper
+from download_wrapper import DownloadWrapper
 
 # An example of reading from a complex Excel worksheet to auto-download fitbit data
-
 
 CHUNK_WIDTH = 5
 
