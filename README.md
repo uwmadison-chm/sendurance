@@ -55,7 +55,7 @@ Create a `client.json` file that looks something like
 
 Then run a console with a fitbit account:
 
-    python3 console.py email.address@wisc.edu
+    python3 console.py email.address@wisc.edu password
 
 Now there's a "fitbit" object you can play with.
 

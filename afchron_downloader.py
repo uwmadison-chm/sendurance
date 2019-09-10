@@ -45,7 +45,6 @@ def read_data(file_path, sheet_name="Distribution"):
     sheet = workbook.sheet_by_name(sheet_name)
     row_list = []
 
-
     def to_date(date):
         return xlrd.xldate_as_tuple(date, workbook.datemode)  
 

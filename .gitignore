@@ -6,5 +6,6 @@ raw/*
 client.json
 .venv
 screen*.png
+geckodriver
 geckodriver.log
 ghostdriver.log

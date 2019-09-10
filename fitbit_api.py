@@ -128,7 +128,8 @@ class FitbitApi:
             if r.ok:
                 return r.json()
             else:
-                logging.error(f"Fitbit API error fetching {self.url + path}: {repr(r.text)}")
+                logging.error(f'Fitbit API error fetching {self.url + path}: {repr(r.text)}')
+                sys.exit(1)
         except TokenExpiredError as e:
             logging.error("Unexpected error:", sys.exc_info()[0])
             self.do_refresh_token()
