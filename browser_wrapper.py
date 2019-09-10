@@ -18,7 +18,7 @@ import tempfile
 class BrowserWrapper:
     """
     This is a slightly evil way to automate OAuth, using headless Firefox.
-    Note that this currently requires geckodriver to be in the path (see README)
+    Note that this requires geckodriver to be in the path or current directory (see README)
     """
     def __init__(self):
         options = Options()

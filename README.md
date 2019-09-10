@@ -13,6 +13,8 @@ refresh-token dance happen automatically.
     source .venv/bin/activate
     pip3 install -r requirements.txt
 
+Install a recent Firefox and put [geckodriver](https://github.com/mozilla/geckodriver/releases/) somewhere in your path, or put it in the sendurance directory.
+
 ## Using the Fleet Downloader
 
 Create a csv file with columns ID, Email log-in, First Day, and Last Day. Include rows for every Fitbit. Either call this file `fleet_data.csv` or edit the fleet_file variable in `fleet_downloader.py` to point to this csv file.
@@ -27,9 +29,9 @@ Then do
 
     python3 fleet_downloader.py
 
-## Using the AFCHRON downloader (with PhantomJS)
 
-1. Install [geckodriver](https://github.com/mozilla/geckodriver/releases/) somewhere in your path.
+See [`afchron_downloader`](afchron_downloader.py) for an example of a 
+study-specific downloader that works from a wacky excel tracking file.
 
 ## Developer details
 
