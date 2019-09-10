@@ -1,6 +1,6 @@
 from fitbit_api import FitbitApi
 import csv
-import json
+import pickle
 from datetime import datetime, timedelta
 import os
 import os.path
@@ -28,16 +28,16 @@ class DownloadWrapper():
     def load_cache(self):
         self.cache_path = os.path.join(self.output, ".cache")
         os.makedirs(self.cache_path, exist_ok=True)
-        self.cache_file = os.path.join(self.cache_path, str(self.ppt) + ".json")
+        self.cache_file = os.path.join(self.cache_path, str(self.ppt) + ".pickle")
         if os.path.exists(self.cache_file):
-            with open(self.cache_file) as json_file:  
-                self.cache = json.load(json_file)
+            with open(self.cache_file, "rb") as f:  
+                self.cache = pickle.load(f)
         else:
             self.cache = {}
 
     def save_cache(self):
-        with open(self.cache_file, "w") as json_file:  
-            json.dumb(self.cache, json_file)
+        with open(self.cache_file, "wb") as f:  
+            pickle.dump(self.cache, f)
 
     def convert_time(self, day, time):
         time = datetime.strptime(time, '%H:%M:%S').time()
@@ -60,6 +60,7 @@ class DownloadWrapper():
         path = os.path.join(self.output, name)
         os.makedirs(path, exist_ok=True)
         filename = os.path.join(path, f'{self.ppt}_1min_{name}.tsv')
+        data_written = False
         with open(filename, 'w') as tsvfile:
             writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
             writer.writerow(headers)
@@ -67,12 +68,15 @@ class DownloadWrapper():
             for day in [self.start + timedelta(days=x) for x in range(0, (self.end - self.start).days + 1)]:
                 logging.info(f"Downloading {day} {name} for {self.ppt}")
                 data = get(day)
-                if length(data) > 0:
+                if not data:
+                    continue
+                if len(data) > 0:
                     data_written = True
                     save(writer, day, data)
 
-        self.cache[name] = datetime.now()
-        save_cache()
+        if data_written:
+            self.cache[name] = datetime.now()
+            self.save_cache()
 
     def save_sleep(self):
         def get(day):
