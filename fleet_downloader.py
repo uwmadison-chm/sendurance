@@ -54,8 +54,7 @@ for index, row in df.iterrows():
     start_date, end_date = get_start_end_time(row)
     email = row['Email log-in'].replace('.gmail', '@gmail')
     pyperclip.copy(email)
-    #  TODO: Automate fitbit registration
-    fitbit = FitbitApi(email, client['id'], client['secret'])
+    fitbit = FitbitApi(email, client['password'], client['id'], client['secret'])
     Downloader = DownloadWrapper(ppt=row['ID'], fitbit=fitbit, start=start_date, end=end_date, output=output)
     logging.info(f"Downloader created for id {row['ID']}")
     Downloader.save_steps()
