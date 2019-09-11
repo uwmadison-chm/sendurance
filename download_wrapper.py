@@ -106,7 +106,7 @@ class DownloadWrapper():
                 writer.writerow([self.ppt, self.convert_time(day, item['time']), item['value']])
 
         headers = ["ID", "Time", "Value"]
-        self.general_save('sleep', headers, get, save)
+        self.general_save('steps', headers, get, save)
 
     def save_hrv(self):
         def get(day):

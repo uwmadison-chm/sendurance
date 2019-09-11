@@ -15,6 +15,7 @@ class FitbitApi:
     def __init__(self, account_email, account_password, client_id, client_secret):
         if "@" not in account_email:
             raise ValueError(account_email + ' does not look like an email')
+        self.account_email = account_email
         self.client_id = client_id
         self.client_secret = client_secret
 
@@ -62,8 +63,12 @@ class FitbitApi:
         return self.token['refresh_token']
 
     def do_refresh_token(self):
-        self.token = self.api.refresh_token(self.token_url, refresh_token=self.refresh_token(), auth=self.auth)
-        self.dump_token()
+        try:
+            self.token = self.api.refresh_token(self.token_url, refresh_token=self.refresh_token(), auth=self.auth)
+            self.dump_token()
+        except:
+            logging.exception(f'Error refreshing token for {self.account_email}')
+            sys.exit(1)
 
     def date_string(self, date):
         if isinstance(date, datetime):
