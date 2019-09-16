@@ -85,9 +85,13 @@ def read_data(file_path, sheet_name="Distribution"):
 r = read_data(args.input)
 for row in r:
     email = f'afc.fitbit+{row["fitbit_id"]}@gmail.com'
+    ppt = row['id']
+    start_date = row['start_date']
+    end_date = row['end_date']
+    logging.info(f"Downloading data for {ppt}, fitbit account {email}, between {start_date} and {end_date}")
     fitbit = FitbitApi(email, client['password'], client['id'], client['secret'])
-    Downloader = DownloadWrapper(ppt=row['id'], fitbit=fitbit, start=row['start_date'],
-                                    end=row['end_date'], output=args.output)
+    Downloader = DownloadWrapper(ppt=ppt, fitbit=fitbit, start=start_date,
+                                 end=end_date, output=args.output)
     Downloader.save_hrv()
     Downloader.save_sleep()
     Downloader.save_steps()

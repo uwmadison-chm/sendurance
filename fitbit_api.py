@@ -88,7 +88,6 @@ class FitbitApi:
 
     def day_activities(self, date):
         return self.intraday_time_series('activities', date)
-        # return self.get(f'/user/-/activities/date/{self.date_string(date)}.json')
 
     def activities(self, date):
         return self.get(f'/user/-/activities/list.json?beforeDate={self.date_string(date)}&offset=0&limit=20&sort=desc')
@@ -98,14 +97,9 @@ class FitbitApi:
 
     def hrv(self, date):
         return self.intraday_time_series('activities/heart', date)
-        # return self.get(f'/user/-/activities/heart/date/{self.date_string(date)}/1d/1sec.json')
 
     def intraday_time_series(self, resource, date, detail_level='1min', start_time=None, end_time=None):
-        url = "/user/-/{resource}/date/{date}/1d/{detail_level}".format(
-            resource=resource,
-            date=self.date_string(date),
-            detail_level=detail_level
-        )
+        url = f"/user/-/{resource}/date/{self.date_string(date)}/1d/{detail_level}"
         # Check that the time range is valid
         time_test = lambda t: not (t is None or isinstance(t, str) and not t)
         time_map = list(map(time_test, [start_time, end_time]))
@@ -128,17 +122,20 @@ class FitbitApi:
         # It would sure be nice to use requests-oauthlib's automatic token refresh callbacks!
         # But that doesn't work because Fitbit requires auth. So we need to catch TokenExpiredError
         # and bounce if needed
-        try:
-            r = self.api.get(self.url + path)
-            if r.ok:
-                return r.json()
-            else:
-                logging.error(f'Fitbit API error fetching {self.url + path}: {repr(r.text)}')
-                sys.exit(1)
-        except TokenExpiredError as e:
-            logging.error("Unexpected error:", sys.exc_info()[0])
-            self.do_refresh_token()
-            self.load_api()
-        return self.api.get(self.url + path).json()
-
+        retries = 0
+        while retries < 2:
+            try:
+                r = self.api.get(self.url + path)
+                if r.ok:
+                    return r.json()
+                else:
+                    logging.error(f'Fitbit API error fetching {self.url + path}: {repr(r.text)}')
+                    sys.exit(1)
+            except TokenExpiredError as e:
+                retries = retries + 1
+                logging.warning(f"Token expiration, trying #{retries}", sys.exc_info()[0])
+                self.do_refresh_token()
+                self.load_api()
+        logging.error("Token refresh failed!", sys.exc_info()[0])
+        sys.exit(1)
 

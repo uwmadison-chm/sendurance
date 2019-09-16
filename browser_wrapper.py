@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 import time
 import os.path
 import tempfile
+import sys
 
 class BrowserWrapper:
     """
@@ -54,6 +55,7 @@ class BrowserWrapper:
         
         try:
             # Login with account and password
+            driver.save_screenshot('screen_start.png')
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#email-input input'))).send_keys(email)
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#password-input input'))).send_keys(password + Keys.ENTER)
 
