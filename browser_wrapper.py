@@ -5,7 +5,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.options import Log
 from selenium.webdriver.support import expected_conditions as expected
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, TimeoutException
 import logging
 
 from urllib.parse import quote
@@ -62,6 +62,13 @@ class BrowserWrapper:
             time.sleep(5)
 
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#selectAllScope'))).click()
+
+        except TimeoutException as e:
+            # Timeout means we got sent to the authorization URL
+            auth_url = driver.current_url
+            print(f"Got auth_url {auth_url}")
+            return auth_url
+
         except WebDriverException as e:
             driver.save_screenshot('screen_error.png')
             logging.exception("Unexpected error when logging in, see screen_error.png")
@@ -74,7 +81,7 @@ class BrowserWrapper:
             # Now we have to just pass back the path we got sent to, which the
             # fitbit API will use to finalize the token. Yay?
             auth_url = driver.current_url
-            print(auth_url)
+            print(f"Got auth_url {auth_url}")
             return auth_url
 
         driver.save_screenshot('screen_end.png')

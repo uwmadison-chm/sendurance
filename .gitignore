@@ -3,7 +3,7 @@ tokens/*
 raw/*
 *.csv
 *.pyc
-client.json
+*.json*
 .venv
 screen*.png
 geckodriver

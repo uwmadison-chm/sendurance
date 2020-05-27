@@ -3,3 +3,4 @@ requests-oauthlib==1.2.0
 coloredlogs==10.0
 selenium
 xlrd
+pandas

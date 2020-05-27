@@ -93,10 +93,26 @@ class FitbitApi:
         return self.get(f'/user/-/activities/list.json?beforeDate={self.date_string(date)}&offset=0&limit=20&sort=desc')
 
     def steps(self, date):
-        return self.intraday_time_series('activities/steps', date)
+        return self.intraday_time_series('activities/tracker/steps', date)
+
+    def inter_steps(self, date1, date2):
+        return self.get(f'activities/tracker/steps/date/{self.date_string(date1)}/{self.date_string(date2)}')
 
     def hrv(self, date):
-        return self.intraday_time_series('activities/heart', date)
+        return self.intraday_time_series('activities/tracker/heart', date)
+
+    def inter_heartrate(self, date1, date2=None):
+        if date2 is None:
+            date2 = date1
+        results = self.get(f'/user/-/activities/heart/date/{self.date_string(date1)}/{self.date_string(date2)}.json')
+        summary = []
+        for x in results['activities-heart']:
+            heartRate = None
+            value = x['value']
+            if 'restingHeartRate' in value:
+                heartRate = value['restingHeartRate']
+            summary.append([x['dateTime'], heartRate])
+        return summary
 
     def intraday_time_series(self, resource, date, detail_level='1min', start_time=None, end_time=None):
         url = f"/user/-/{resource}/date/{self.date_string(date)}/1d/{detail_level}"

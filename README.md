@@ -5,7 +5,7 @@ fleet of fitbits, for scientific study purposes.
 
 Instead of using `python-fitbit`, this connects directly with 
 `requests-oauthlib`. It caches tokens in `./tokens/` and attempts to make the 
-refresh-token dance happen automatically.
+refresh-token dance happen automatically using `geckodriver`.
 
 ## Requirements
 
@@ -15,11 +15,28 @@ refresh-token dance happen automatically.
 
 Install a recent Firefox and put [geckodriver](https://github.com/mozilla/geckodriver/releases/) somewhere in your path, or put it in the sendurance directory.
 
-## Using the Fleet Downloader
+## Mass downloading
 
-Create a csv file with columns ID, Email log-in, First Day, and Last Day. Include rows for every Fitbit. Either call this file `fleet_data.csv` or edit the fleet_file variable in `fleet_downloader.py` to point to this csv file.
+### Using the Fleet Downloader
 
-You can edit `fleet_downloader.py` to download the data you want using the lines
+Create a `client.json` containing your Fitbit API id, secret, and the shared password on your fitbit accounts:
+
+    {"id": "XYZ", "secret": "something", "password": "shared"}
+
+Create a csv file with columns ID, Email log-in, First Day, and Last Day. Include rows for every Fitbit.
+
+Then create a work event Excel file. TODO: Document as used by MP2 study.
+
+Create an `input.json` file for each fleet, to link these two things:
+
+    {
+        "fleet_file": "/path/to/fleet_data.csv",
+        "work_event_file": "/path/to/work_events.xlsx",
+        "output_path": "/path/to/output"
+    }
+
+You can edit `fleet_downloader.py` to download the data you want. Change the 
+lines at the bottom:
     
     Downloader.save_steps()
     Downloader.save_hrv()
@@ -27,11 +44,12 @@ You can edit `fleet_downloader.py` to download the data you want using the lines
 
 Then do
 
-    python3 fleet_downloader.py
+    python3 fleet_downloader.py input.json
 
+### Other download styles
 
 See [`afchron_downloader`](afchron_downloader.py) for an example of a 
-study-specific downloader that works from a wacky excel tracking file.
+study-specific downloader that works from a single wacky excel tracking file.
 
 ## Developer details
 

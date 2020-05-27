@@ -59,7 +59,7 @@ class DownloadWrapper():
 
         path = os.path.join(self.output, name)
         os.makedirs(path, exist_ok=True)
-        filename = os.path.join(path, f'{self.ppt}_1min_{name}.tsv')
+        filename = os.path.join(path, f'{self.ppt}_{name}.tsv')
         data_written = False
         with open(filename, 'w') as tsvfile:
             writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')
@@ -122,3 +122,13 @@ class DownloadWrapper():
         headers = ["ID", "Time", "Heartrate"]
         self.general_save('HR', headers, get, save)
 
+    def save_inter_heartrate(self):
+        def get(day):
+            return self.fitbit.inter_heartrate(day)
+
+        def save(writer, day, data):
+            for item in data:
+                writer.writerow([self.ppt, item[0], item[1]])
+
+        headers = ["ID", "Date", "Resting Heartrate"]
+        self.general_save('inter_HR', headers, get, save)
