@@ -89,7 +89,7 @@ checks = []
 skip = True
 for index, row in df_log_in.iterrows():
     row['ID'] = int(row['ID'])
-    print(row['ID'])
+    logging.info(f"Downloading for subject {row['ID']}")
     participant_dates = df_we[df_we['id'] == row['ID']]
     start_date = participant_dates.iloc[0]['start']
     end_date = participant_dates.iloc[-1]['end']
@@ -97,14 +97,19 @@ for index, row in df_log_in.iterrows():
     email = row['Email log-in'].replace('.gmail', '@gmail')
     fitbit = FitbitApi(email, client['password'], client['id'], client['secret'])
     Downloader = DownloadWrapper(ppt=row['ID'], fitbit=fitbit, start=start_date, end=end_date, output=output)
-    logging.info(f"Downloader created for id {row['ID']}")
+    logging.debug(f"Downloader created for id {row['ID']}")
     if args.interhr or args.all:
+        logging.debug(f"Downloading inter heartrate for {row['ID']}")
         Downloader.save_inter_heartrate()
     if args.hrv or args.all:
+        logging.debug(f"Downloading hrv for {row['ID']}")
         Downloader.save_hrv()
     if args.steps or args.all:
+        logging.debug(f"Downloading steps for {row['ID']}")
         Downloader.save_steps()
     if args.sleep or args.all:
+        logging.debug(f"Downloading sleep for {row['ID']}")
         Downloader.save_sleep()
     if args.sleep_summary or args.all:
+        logging.debug(f"Downloading sleep summary for {row['ID']}")
         Downloader.save_sleep_summary()
