@@ -9,3 +9,5 @@ screen*.png
 geckodriver
 geckodriver.log
 ghostdriver.log
+._.DS_Store
+.DS_Store
