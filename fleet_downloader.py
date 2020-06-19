@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
 import pandas as pd
 import json
 import sys
 from datetime import datetime, timedelta
-import logging
 import argparse
+import logging
 import coloredlogs
 
 from fitbit_api import FitbitApi
@@ -63,6 +64,8 @@ except FileNotFoundError as e:
 fleet_file = settings['fleet_file']
 work_event_file = settings['work_event_file']
 
+logging.info(f"Loading CSV info from {fleet_file} and {work_event_file}")
+
 df_log_in = pd.read_csv(fleet_file, header=1)
 
 df_we = pd.read_excel(work_event_file, sheet_name='SCORED', header=0)
@@ -76,8 +79,7 @@ df_we['type'] = df_we['start'].apply(type)
 df_we = df_we[df_we['type'] == datetime]
 df_log_in = df_log_in[df_log_in['ID'].notna()]
 
-# Change to wherever you want to output the files
-output = r'./raw'
+output = settings['output_path']
 
 try:
     with open("client.json") as json_file:
@@ -96,6 +98,7 @@ for index, row in df_log_in.iterrows():
 
     email = row['Email log-in'].replace('.gmail', '@gmail')
     fitbit = FitbitApi(email, client['password'], client['id'], client['secret'])
+    logging.debug(f"Connecting to fitbit API with user {fitbit.user()}")
     Downloader = DownloadWrapper(ppt=row['ID'], fitbit=fitbit, start=start_date, end=end_date, output=output)
     logging.debug(f"Downloader created for id {row['ID']}")
     if args.interhr or args.all:

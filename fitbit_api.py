@@ -1,4 +1,4 @@
-from oauthlib.oauth2 import BackendApplicationClient 
+from oauthlib.oauth2 import BackendApplicationClient
 from oauthlib.oauth2.rfc6749.errors import (InsecureTransportError,
                                             TokenExpiredError)
 from requests_oauthlib import OAuth2Session
@@ -10,6 +10,7 @@ import sys
 import logging
 import os
 from browser_wrapper import BrowserWrapper
+from IPython import embed
 
 class FitbitApi:
     def __init__(self, account_email, account_password, client_id, client_secret):
@@ -28,18 +29,19 @@ class FitbitApi:
 
         # For some dumb reason, Fitbit's api requires you use basic auth headers when fetching a token.
         self.auth = HTTPBasicAuth(self.client_id, self.client_secret)
-        
+
         self.token_file = Path("tokens/%s.json" % account_email)
         if self.token_file.is_file():
             logging.debug("Loading existing token")
             self.load_token()
             self.load_api()
         else:
-            self.api = OAuth2Session(client_id=self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
+            self.api = OAuth2Session(client_id=self.client_id, redirect_uri=self.redirect_uri, scope=self.scope, state=account_email)
             authorization_url, state = self.api.authorization_url(self.auth_url)
 
             # Using geckobrowser to automate the OAuth dance
             browser = BrowserWrapper()
+            logging.info(f"Logging in as {account_email}")
             authorization_response = browser.authorize(authorization_url, account_email, account_password)
 
             self.token = self.api.fetch_token(token_url=self.token_url, auth=self.auth, authorization_response=authorization_response)
@@ -49,11 +51,11 @@ class FitbitApi:
         self.api = OAuth2Session(client_id=self.client_id, token=self.token, scope=self.scope)
 
     def load_token(self):
-        with open(self.token_file) as json_file:  
+        with open(self.token_file) as json_file:
             self.token = json.load(json_file)
 
     def dump_token(self):
-        with open(self.token_file, 'w') as outfile:  
+        with open(self.token_file, 'w') as outfile:
             json.dump(self.token, outfile)
 
     def access_token(self):
@@ -134,6 +136,9 @@ class FitbitApi:
 
         return self.get(url)
 
+    def user(self):
+        return self.get(f'/user/-/profile.json')
+
     def get(self, path):
         # It would sure be nice to use requests-oauthlib's automatic token refresh callbacks!
         # But that doesn't work because Fitbit requires auth. So we need to catch TokenExpiredError
@@ -154,4 +159,3 @@ class FitbitApi:
                 self.load_api()
         logging.error("Token refresh failed!", sys.exc_info()[0])
         sys.exit(1)
-
