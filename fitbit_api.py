@@ -36,8 +36,8 @@ class FitbitApi:
             self.load_token()
             self.load_api()
         else:
-            self.api = OAuth2Session(client_id=self.client_id, redirect_uri=self.redirect_uri, scope=self.scope, state=account_email)
-            authorization_url, state = self.api.authorization_url(self.auth_url)
+            self.api = OAuth2Session(client_id=self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
+            authorization_url, state = self.api.authorization_url(self.auth_url, prompt="login")
 
             # Using geckobrowser to automate the OAuth dance
             browser = BrowserWrapper()
