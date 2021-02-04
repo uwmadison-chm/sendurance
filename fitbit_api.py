@@ -13,7 +13,7 @@ from browser_wrapper import BrowserWrapper
 from IPython import embed
 
 class FitbitApi:
-    def __init__(self, account_email, account_password, client_id, client_secret):
+    def __init__(self, account_email, account_password, client_id, client_secret, automated_login=True):
         if "@" not in account_email:
             raise ValueError(account_email + ' does not look like an email')
         self.account_email = account_email
@@ -39,10 +39,13 @@ class FitbitApi:
             self.api = OAuth2Session(client_id=self.client_id, redirect_uri=self.redirect_uri, scope=self.scope)
             authorization_url, state = self.api.authorization_url(self.auth_url, prompt="login")
 
-            # Using geckobrowser to automate the OAuth dance
-            browser = BrowserWrapper()
-            logging.info(f"Logging in as {account_email}")
-            authorization_response = browser.authorize(authorization_url, account_email, account_password)
+            if automated_login:
+                # Using geckobrowser to automate the OAuth dance
+                browser = BrowserWrapper()
+                authorization_response = browser.authorize(authorization_url, account_email, account_password)
+            else:
+                print(f"Navigate to {authorization_url} and log in with {account_email} / {account_password}")
+                authorization_response = input("Paste the url you get redirected to here: ")
 
             self.token = self.api.fetch_token(token_url=self.token_url, auth=self.auth, authorization_response=authorization_response)
             self.dump_token()

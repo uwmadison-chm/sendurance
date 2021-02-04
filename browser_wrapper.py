@@ -23,29 +23,17 @@ class BrowserWrapper:
     """
     def __init__(self):
         options = Options()
-        log = Log()
-        log.level = "TRACE"
-
-        options.add_argument(log.level)
         options.headless = True
-
-        # profile = tempfile.mkdtemp(".selenium")
-        # print("*** Using profile: {}".format(profile))
 
         geckodriver = './geckodriver'
         if not os.path.exists('./geckodriver'):
             geckodriver = 'geckodriver'
-        profile = FirefoxProfile()
-        profile.set_preference("browser.cache.disk.enable", False)
-        profile.set_preference("browser.cache.memory.enable", False)
-        profile.set_preference("browser.cache.offline.enable", False)
-        profile.set_preference("network.http.use-cache", False)
-        self.driver = Firefox(profile, executable_path=geckodriver, options=options, service_args=["--marionette-port", "2828"])
+        self.driver = Firefox(executable_path=geckodriver, options=options, service_args=["--marionette-port", "2828", "-vv"])
         self.driver.delete_all_cookies()
 
     def authorize(self, url, email, password):
         driver = self.driver
-        wait = WebDriverWait(driver, timeout=10)
+        wait = WebDriverWait(driver, timeout=15)
         try:
             logging.info(f"Attempting to authorize at url {url}")
             driver.get(url)
@@ -63,6 +51,9 @@ class BrowserWrapper:
                 logging.exception("Unexpected error on load, see screen_error.png")
                 sys.exit(1)
         
+        # On guero, seems we need to be more patient
+        time.sleep(10)
+
         try:
             # Login with account and password
             driver.save_screenshot('screen_start.png')
