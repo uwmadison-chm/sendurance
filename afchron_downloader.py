@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import dateutil.parser
 
 import csv
-import xlrd
+import openpyxl
 
 import json
 from fitbit_api import FitbitApi
@@ -40,50 +40,47 @@ except FileNotFoundError as e:
 
 
 def read_data(file_path, sheet_name="Distribution"):
-    workbook = xlrd.open_workbook(file_path)
-    sheet = workbook.sheet_by_name(sheet_name)
+    workbook = openpyxl.load_workbook(filename=file_path)
+    sheet = workbook[sheet_name]
     row_list = []
 
-    def to_date(date):
-        return xlrd.xldate_as_tuple(date, workbook.datemode)  
-
     # The data is crazily laid out in 5 column chunks, so we need to restructure it.
-    chunks = int(sheet.ncols / CHUNK_WIDTH)
+    chunks = int(sheet.max_column / CHUNK_WIDTH)
 
     for chunk in range(0, chunks):
-        for row_index in range(1, sheet.nrows):
-            start_col = chunk * CHUNK_WIDTH
-            fitbit_id = sheet.cell_value(rowx=row_index, colx=start_col)
+        for row_index in range(3, sheet.max_row):
+            start_col = chunk * CHUNK_WIDTH + 1
+            fitbit_id = sheet.cell(row=row_index, column=start_col).value
             if not fitbit_id:
                 continue
 
-            start_date = sheet.cell_value(rowx=row_index, colx=start_col + 2)
-            end_date = sheet.cell_value(rowx=row_index, colx=start_col + 3)
-            try:
-                start_date = float(start_date)
-                end_date = float(end_date)
-            except ValueError:
+            ident_value = sheet.cell(row=row_index, column=start_col + 1).value
+            if not ident_value:
                 continue
 
-            if start_date <= 0.0 or end_date <= 0.0:
+            start_date = sheet.cell(row=row_index, column=start_col + 2).value
+            end_date = sheet.cell(row=row_index, column=start_col + 3).value
+
+            if not start_date:
+                logging.warning(f"Skipping {ident_value}, missing start date")
                 continue
 
-            start_date = to_date(start_date)
-            end_date = to_date(end_date)
+            if not end_date:
+                logging.warning(f"Skipping {ident_value}, missing end date")
+                continue
 
-            ident_value = sheet.cell_value(rowx=row_index, colx=start_col + 1)
             try:
                 ident = int(ident_value)
                 d = {
                     'fitbit_id': fitbit_id,
                     'id': ident,
-                    'start_date': datetime(*start_date) - timedelta(days=1),
-                    'end_date': datetime(*end_date) + timedelta(days=1),
+                    'start_date': start_date - timedelta(days=1),
+                    'end_date': end_date + timedelta(days=1),
                 }
                 logging.debug(d)
                 row_list.append(d)
             except:
-                logging.warn(f"Failure on identifier {ident_value}")
+                logging.warning(f"Failure on identifier {ident_value}")
 
     return row_list
 
@@ -96,7 +93,7 @@ for row in r:
     end_date = row['end_date']
 
     if ppt >= 3000:
-        logging.warn("Skipping pilot ppt {ppt}")
+        logging.warning(f"Skipping pilot ppt {ppt}")
         continue
 
     logging.info(f"Initializing connection for {ppt}, fitbit account {email}, between {start_date} and {end_date}")

@@ -1,6 +1,6 @@
-requests==2.22.0
-requests-oauthlib==1.2.0
-coloredlogs==10.0
+requests
+requests-oauthlib
+coloredlogs
 selenium
-xlrd
+openpyxl
 pandas
