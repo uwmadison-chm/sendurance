@@ -71,14 +71,20 @@ def read_data(file_path, sheet_name="Distribution"):
             start_date = to_date(start_date)
             end_date = to_date(end_date)
 
-            d = {
-                'fitbit_id': fitbit_id,
-                'id': int(sheet.cell_value(rowx=row_index, colx=start_col + 1)),
-                'start_date': datetime(*start_date) - timedelta(days=1),
-                'end_date': datetime(*end_date) + timedelta(days=1),
-            }
-            logging.debug(d)
-            row_list.append(d)
+            ident_value = sheet.cell_value(rowx=row_index, colx=start_col + 1)
+            try:
+                ident = int(ident_value)
+                d = {
+                    'fitbit_id': fitbit_id,
+                    'id': ident,
+                    'start_date': datetime(*start_date) - timedelta(days=1),
+                    'end_date': datetime(*end_date) + timedelta(days=1),
+                }
+                logging.debug(d)
+                row_list.append(d)
+            except:
+                logging.warn(f"Failure on identifier {ident_value}")
+
     return row_list
 
 
@@ -88,8 +94,15 @@ for row in r:
     ppt = row['id']
     start_date = row['start_date']
     end_date = row['end_date']
-    logging.info(f"Downloading data for {ppt}, fitbit account {email}, between {start_date} and {end_date}")
-    fitbit = FitbitApi(email, client['password'], client['id'], client['secret'])
+
+    if ppt >= 3000:
+        logging.warn("Skipping pilot ppt {ppt}")
+        continue
+
+    logging.info(f"Initializing connection for {ppt}, fitbit account {email}, between {start_date} and {end_date}")
+    fitbit = FitbitApi(email,
+            client['password'], client['id'], client['secret'],
+            debug=args.verbose > 1)
     Downloader = DownloadWrapper(ppt=ppt, fitbit=fitbit, start=start_date,
                                  end=end_date, output=args.output)
     Downloader.save_hrv()

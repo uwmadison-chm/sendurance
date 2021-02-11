@@ -13,12 +13,13 @@ from browser_wrapper import BrowserWrapper
 from IPython import embed
 
 class FitbitApi:
-    def __init__(self, account_email, account_password, client_id, client_secret, automated_login=True):
+    def __init__(self, account_email, account_password, client_id, client_secret, automated_login=True, debug=False):
         if "@" not in account_email:
             raise ValueError(account_email + ' does not look like an email')
         self.account_email = account_email
         self.client_id = client_id
         self.client_secret = client_secret
+        self.debug = debug
 
         self.scope = ["activity", "heartrate", "location", "nutrition", "profile", "settings", "sleep", "social", "weight"]
         self.redirect_uri = 'https://127.0.0.1:8080/'
@@ -41,7 +42,7 @@ class FitbitApi:
 
             if automated_login:
                 # Using geckobrowser to automate the OAuth dance
-                browser = BrowserWrapper()
+                browser = BrowserWrapper(debug=self.debug)
                 authorization_response = browser.authorize(authorization_url, account_email, account_password)
             else:
                 print(f"Navigate to {authorization_url} and log in with {account_email} / {account_password}")
@@ -98,13 +99,13 @@ class FitbitApi:
         return self.get(f'/user/-/activities/list.json?beforeDate={self.date_string(date)}&offset=0&limit=20&sort=desc')
 
     def steps(self, date):
-        return self.intraday_time_series('activities/tracker/steps', date)
+        return self.intraday_time_series('activities/steps', date)
 
     def inter_steps(self, date1, date2):
-        return self.get(f'activities/tracker/steps/date/{self.date_string(date1)}/{self.date_string(date2)}')
+        return self.get(f'activities/steps/date/{self.date_string(date1)}/{self.date_string(date2)}')
 
     def hrv(self, date):
-        return self.intraday_time_series('activities/tracker/heart', date)
+        return self.intraday_time_series('activities/heart', date)
 
     def inter_heartrate(self, date1, date2=None):
         if date2 is None:

@@ -21,9 +21,10 @@ class BrowserWrapper:
     This is a slightly evil way to automate OAuth, using headless Firefox.
     Note that this requires geckodriver to be in the path or current directory (see README)
     """
-    def __init__(self):
+    def __init__(self, debug=False):
         options = Options()
         options.headless = True
+        self.debug = debug
 
         geckodriver = './geckodriver'
         if not os.path.exists('./geckodriver'):
@@ -47,22 +48,25 @@ class BrowserWrapper:
                 sys.exit()
                 # TODO: log out somehow
             else:
-                driver.save_screenshot('screen_error.png')
+                if self.debug:
+                    driver.save_screenshot('screen_error.png')
                 logging.exception("Unexpected error on load, see screen_error.png")
                 sys.exit(1)
         
         # On guero, seems we need to be more patient
-        time.sleep(10)
+        time.sleep(12)
 
         try:
             # Login with account and password
-            driver.save_screenshot('screen_start.png')
+            if self.debug:
+                driver.save_screenshot('screen_start.png')
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#email-input input'))).send_keys(email)
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#password-input input'))).send_keys(password + Keys.ENTER)
 
-            driver.save_screenshot(f'screen_login_{email}.png')
+            if self.debug:
+                driver.save_screenshot(f'screen_login_{email}.png')
 
-            time.sleep(5)
+            time.sleep(8)
 
             wait.until(expected.visibility_of_element_located((By.CSS_SELECTOR, '#selectAllScope'))).click()
 

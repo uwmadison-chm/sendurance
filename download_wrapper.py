@@ -3,6 +3,7 @@ import csv
 import pickle
 from datetime import datetime, timedelta
 import os
+import sys
 import os.path
 import logging
 
@@ -110,10 +111,15 @@ class DownloadWrapper():
 
     def save_hrv(self):
         def get(day):
-            hrv = self.fitbit.hrv(day)
-            if not hrv['activities-heart-intraday']:
+            try:
+                hrv = self.fitbit.hrv(day)
+                if not hrv['activities-heart-intraday']:
+                    return None
+                return hrv['activities-heart-intraday']['dataset']
+            except:
+                ex = sys.exc_info()[0]
+                logging.warn(f"Got {ex} when trying heartrate for {day}")
                 return None
-            return hrv['activities-heart-intraday']['dataset']
 
         def save(writer, day, data):
             for item in data:

@@ -51,6 +51,9 @@ Then do
 See [`afchron_downloader`](afchron_downloader.py) for an example of a 
 study-specific downloader that works from a single wacky excel tracking file.
 
+Run with -v or -vv for more details, including screenshots of geckobrowser 
+during the login dance.
+
 ## Developer details
 
 For development/console stuff, you'll want IPython:
