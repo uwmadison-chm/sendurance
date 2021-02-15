@@ -82,23 +82,36 @@ def read_data(file_path, sheet_name="Distribution"):
             except:
                 logging.warning(f"Failure on identifier {ident_value}")
 
-    return row_list
+    return sorted(row_list, key=lambda x: x['id'])
 
 
 r = read_data(args.input)
 for row in r:
-    email = f'afc.fitbit+{row["fitbit_id"]}@gmail.com'
+    fitbit_id = row['fitbit_id']
     ppt = row['id']
     start_date = row['start_date']
     end_date = row['end_date']
 
+    if '*' in fitbit_id:
+        # Special password, check for it in secret client hash
+        fitbit_id = fitbit_id.strip('*')
+        if fitbit_id in client['password-overrides']:
+            password = client['password-overrides'][fitbit_id]
+        else:
+            logging.warning(f"Skipping row with * in fitbit id {fitbit_id}, ppt {ppt}")
+            continue
+    else:
+        password = client['password']
+
+    email = f'afc.fitbit+{fitbit_id}@gmail.com'
+
     if ppt >= 3000:
-        logging.warning(f"Skipping pilot ppt {ppt}")
+        logging.warning(f"Skipping pilot ppt {ppt} with fitbit id {fitbit_id}")
         continue
 
-    logging.info(f"Initializing connection for {ppt}, fitbit account {email}, between {start_date} and {end_date}")
+    logging.info(f"Initializing connection for {ppt}, fitbit account {email} with internal id {fitbit_id}, between {start_date} and {end_date}")
     fitbit = FitbitApi(email,
-            client['password'], client['id'], client['secret'],
+            password, client['id'], client['secret'],
             debug=args.verbose > 1)
     Downloader = DownloadWrapper(ppt=ppt, fitbit=fitbit, start=start_date,
                                  end=end_date, output=args.output)

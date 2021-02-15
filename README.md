@@ -54,6 +54,13 @@ study-specific downloader that works from a single wacky excel tracking file.
 Run with -v or -vv for more details, including screenshots of geckobrowser 
 during the login dance.
 
+You will need a client.json with `id` (your client ID) and `secret` for the 
+Fitbit API, and also a `password` field with what to use to log into the 
+fitbits.
+
+You can add custom per-fitbit passwords for accounts that did not get the main 
+password in client.json in a hash `password-overrides`.
+
 ## Developer details
 
 For development/console stuff, you'll want IPython:
