@@ -79,7 +79,7 @@ class DownloadWrapper():
             self.cache[name] = datetime.now()
             self.save_cache()
 
-    def save_sleep(self):
+    def save_sleep_details(self):
         def get(day):
             sleep = self.fitbit.sleep(day)
             if not sleep['sleep']:
@@ -93,7 +93,29 @@ class DownloadWrapper():
                     [self.ppt, self.convert_time(day, item['dateTime']), item['value'], interpreter[int(item['value'])]])
 
         headers = ["ID", "Time", "State", "Interpreted"]
-        self.general_save('sleep', headers, get, save)
+        self.general_save('sleep_details', headers, get, save)
+
+    def save_sleep_summary(self):
+        def get(day):
+            sleep = self.fitbit.sleep(day)
+            if not sleep['sleep']:
+                return None
+            return sleep['sleep'][0]
+
+        def save(writer, day, data):
+            writer.writerow(
+                [self.ppt, data['dateOfSleep'], data['duration'], data['efficiency'], data['isMainSleep'],
+                    data['minutesAsleep'], data['minutesAwake'],
+                    data['awakeDuration'], data['awakeningsCount'],
+                    data['minutesAfterWakeup'], data['minutesToFallAsleep'],
+                    data['startTime'], data['endTime'], data['timeInBed']])
+
+        headers = ["ID", "Date", "Duration", "Efficiency", "IsMainSleep",
+                "MinutesAsleep", "MinutesAwake",
+                "AwakeDuration", "AwakeningsCount",
+                "MinutesAfterWakeup", "MinutesToFallAsleep",
+                "StartTime", "EndTime", "TimeInBed"]
+        self.general_save('sleep_summary', headers, get, save)
 
     def save_steps(self):
         def get(day):

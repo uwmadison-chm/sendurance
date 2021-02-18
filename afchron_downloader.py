@@ -116,5 +116,6 @@ for row in r:
     Downloader = DownloadWrapper(ppt=ppt, fitbit=fitbit, start=start_date,
                                  end=end_date, output=args.output)
     Downloader.save_hrv()
-    Downloader.save_sleep()
+    Downloader.save_sleep_summary()
+    Downloader.save_sleep_details()
     Downloader.save_steps()
