@@ -113,9 +113,9 @@ for row in r:
     fitbit = FitbitApi(email,
             password, client['id'], client['secret'],
             debug=args.verbose > 1)
-    Downloader = DownloadWrapper(ppt=ppt, fitbit=fitbit, start=start_date,
+    downloader = DownloadWrapper(ppt=ppt, fitbit=fitbit, start=start_date,
                                  end=end_date, output=args.output)
-    Downloader.save_hrv()
-    Downloader.save_sleep_summary()
-    Downloader.save_sleep_details()
-    Downloader.save_steps()
+    downloader.save_hrv()
+    downloader.save_sleep_summary()
+    downloader.save_sleep_details()
+    downloader.save_steps()

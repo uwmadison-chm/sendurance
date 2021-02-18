@@ -98,23 +98,26 @@ class DownloadWrapper():
     def save_sleep_summary(self):
         def get(day):
             sleep = self.fitbit.sleep(day)
-            if not sleep['sleep']:
-                return None
-            return sleep['sleep'][0]
+            return sleep
 
         def save(writer, day, data):
-            writer.writerow(
-                [self.ppt, data['dateOfSleep'], data['duration'], data['efficiency'], data['isMainSleep'],
-                    data['minutesAsleep'], data['minutesAwake'],
-                    data['awakeDuration'], data['awakeningsCount'],
-                    data['minutesAfterWakeup'], data['minutesToFallAsleep'],
-                    data['startTime'], data['endTime'], data['timeInBed']])
+            summary = data['summary']
+            for item in data['sleep']:
+                writer.writerow(
+                    [self.ppt, item['dateOfSleep'], item['duration'], item['efficiency'], item['isMainSleep'],
+                        item['minutesAsleep'], item['minutesAwake'],
+                        item['awakeDuration'], item['awakeningsCount'],
+                        item['minutesAfterWakeup'], item['minutesToFallAsleep'],
+                        item['startTime'], item['endTime'], item['timeInBed'],
+                        summary['totalMinutesAsleep'], summary['totalSleepRecords'], summary['totalTimeInBed'],
+                    ])
 
         headers = ["ID", "Date", "Duration", "Efficiency", "IsMainSleep",
                 "MinutesAsleep", "MinutesAwake",
                 "AwakeDuration", "AwakeningsCount",
                 "MinutesAfterWakeup", "MinutesToFallAsleep",
-                "StartTime", "EndTime", "TimeInBed"]
+                "StartTime", "EndTime", "TimeInBed"
+                "TotalMinutesAsleep", "TotalSleepRecords", "TotalTimeInBed"]
         self.general_save('sleep_summary', headers, get, save)
 
     def save_steps(self):
