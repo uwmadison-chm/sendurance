@@ -54,13 +54,17 @@ class DownloadWrapper():
             return True
 
     def general_save(self, name, headers, get, save):
-        if self.check_cache_already_downloaded(name):
-            logging.debug(f"Not downloading {name} for {self.ppt}, already downloaded")
-            return
-
         path = os.path.join(self.output, name)
         os.makedirs(path, exist_ok=True)
         filename = os.path.join(path, f'{self.ppt}_{name}.tsv')
+        if os.path.exists(filename) and datetime.now() - timedelta(days=30) > self.end:
+            logging.debug(f"Not downloading old data for {self.ppt}, already exists")
+            return
+
+        if os.path.exists(filename) and self.check_cache_already_downloaded(name):
+            logging.debug(f"Not downloading {name} for {self.ppt}, already downloaded once this week")
+            return
+
         data_written = False
         with open(filename, 'w') as tsvfile:
             writer = csv.writer(tsvfile, dialect='excel-tab', lineterminator='\n')

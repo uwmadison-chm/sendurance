@@ -109,7 +109,7 @@ for row in r:
         logging.warning(f"Skipping pilot ppt {ppt} with fitbit id {fitbit_id}")
         continue
 
-    logging.info(f"Initializing connection for {ppt}, fitbit account {email} with internal id {fitbit_id}, between {start_date} and {end_date}")
+    logging.debug(f"Initializing connection for {ppt}, fitbit account {email} with internal id {fitbit_id}, between {start_date} and {end_date}")
     fitbit = FitbitApi(email,
             password, client['id'], client['secret'],
             debug=args.verbose > 1)
