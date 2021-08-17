@@ -120,7 +120,7 @@ class DownloadWrapper():
                 "MinutesAsleep", "MinutesAwake",
                 "AwakeDuration", "AwakeningsCount",
                 "MinutesAfterWakeup", "MinutesToFallAsleep",
-                "StartTime", "EndTime", "TimeInBed"
+                "StartTime", "EndTime", "TimeInBed",
                 "TotalMinutesAsleep", "TotalSleepRecords", "TotalTimeInBed"]
         self.general_save('sleep_summary', headers, get, save)
 
