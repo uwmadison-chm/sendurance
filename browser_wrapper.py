@@ -73,7 +73,8 @@ class BrowserWrapper:
         except TimeoutException as e:
             # Timeout means we got sent to the authorization URL, to our localhost that doesn't exist
             auth_url = driver.current_url
-            logging.info(f"Got auth_url {auth_url}")
+            logging.info(f"Got auth_url after timeout {auth_url}")
+            driver.save_screenshot('screen_auth_timeout.png')
             return auth_url
 
         except WebDriverException as e:
@@ -88,7 +89,8 @@ class BrowserWrapper:
             # Now we have to just pass back the path we got sent to, which the
             # fitbit API will use to finalize the token. Yay?
             auth_url = driver.current_url
-            print(f"Got auth_url {auth_url}")
+            print(f"Got auth_url after exception {auth_url}")
+            driver.save_screenshot('screen_auth_exception.png')
             return auth_url
 
         driver.save_screenshot('screen_end.png')

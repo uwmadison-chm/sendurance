@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 import coloredlogs
@@ -21,6 +22,7 @@ CHUNK_WIDTH = 5
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbose', action='count')
 parser.add_argument('-o', '--output', default='./raw', help='Path to store output in')
+parser.add_argument('-f', '--force', help='Force download all')
 parser.add_argument('input', help='Input CSV listing participant IDs and fitbit account emails')
 args = parser.parse_args()
 
@@ -79,8 +81,8 @@ def read_data(file_path, sheet_name="Distribution"):
                 }
                 logging.debug(d)
                 row_list.append(d)
-            except:
-                logging.warning(f"Failure on identifier {ident_value}")
+            except Exception as e:
+                logging.warning(f"Failure on identifier {ident_value}: {repr(e)}")
 
     return sorted(row_list, key=lambda x: x['id'])
 
@@ -107,6 +109,10 @@ for row in r:
 
     if ppt >= 3000:
         logging.warning(f"Skipping pilot ppt {ppt} with fitbit id {fitbit_id}")
+        continue
+
+    if os.path.isfile(f"{args.output}/HR/{ppt}_HR.tsv") and not args.force:
+        logging.debug(f"Skipping download for {ppt}, files already exist, use -f to force download")
         continue
 
     logging.debug(f"Initializing connection for {ppt}, fitbit account {email} with internal id {fitbit_id}, between {start_date} and {end_date}")
